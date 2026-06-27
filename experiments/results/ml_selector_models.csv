@@ -1,0 +1,4 @@
+model,train_blocks,validation_blocks,test_blocks,feature_count,model_bytes,train_seconds,validation_inference_seconds,test_inference_seconds,validation_regret_bytes,test_regret_bytes,test_improvement_vs_deterministic_bytes
+decision_tree,40000,20000,62484,23,8186,0.3619882999919355,0.002688299980945885,0.008172099944204092,693,2277,127402
+hist_gradient_boosting,40000,20000,62484,23,452981,2.2130365000339225,0.17421870003454387,0.6067067999392748,84,429,129250
+small_mlp,40000,20000,62484,23,48532,6.289481299929321,0.014258800074458122,0.04240479995496571,2705,14615,115064

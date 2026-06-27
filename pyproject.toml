@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "adaptive-sparse-block-coding"
+version = "0.0.0"
+description = "Experimental adaptive lossless representations for sparse blocks"
+requires-python = ">=3.10"
+
+[tool.setuptools]
+package-dir = {"" = "experiments/src"}
+
+[tool.setuptools.packages.find]
+where = ["experiments/src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["experiments/src"]
+testpaths = ["experiments/tests"]
+

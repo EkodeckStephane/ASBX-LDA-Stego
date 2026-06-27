@@ -1,0 +1,13 @@
+{
+  "seed": 20260609,
+  "block_sizes": [16, 32, 64, 128, 256, 512],
+  "synthetic_bytes_per_file": 32768,
+  "selector_block_size": 256,
+  "synthetic_splits": {
+    "train": 0,
+    "validation": 1000,
+    "test": 2000
+  },
+  "format_magic": "ASBX",
+  "format_version": 0
+}

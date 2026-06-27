@@ -1,0 +1,6 @@
+file,input_bytes,encoded_bytes,ratio,encode_mib_s,decode_mib_s,repeats
+large_random_control.bin,1048576,1048585,1.000009,51.635,2727.273,30
+large_sparse_bits_0005.bin,1048576,27048,0.025795,91.185,2500.0,30
+large_sparse_bits_005.bin,1048576,86310,0.082312,79.365,1500.0,30
+large_sparse_records.bin,2097152,275032,0.131145,200.0,1875.0,30
+large_zero_bursts.bin,2097152,410829,0.195899,147.783,2857.143,30
