@@ -76,6 +76,13 @@ asbx_status asbx_decode(
     asbx_buffer *output
 );
 
+asbx_status asbx_decode_with_limit(
+    const uint8_t *container,
+    size_t container_size,
+    size_t max_output_size,
+    asbx_buffer *output
+);
+
 #ifdef __cplusplus
 }
 #endif

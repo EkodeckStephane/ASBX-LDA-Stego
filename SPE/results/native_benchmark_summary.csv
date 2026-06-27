@@ -1,6 +1,6 @@
 domain,n,median_ratio,median_python_encode_mib_s,median_native_encode_mib_s,median_python_decode_mib_s,median_native_decode_mib_s,median_encode_speedup,all_round_trips_ok
-image_tensor,20,0.644226,1.047,93.305,7.815,3125.0,101.459,True
-mixed_control,8,0.98938,1.486,91.912,62.355,15625000000.0,74.989,True
-sparse_matrix,12,0.165062,0.71,78.174,13.264,150682104.492,122.121,True
-synthetic,9,0.196915,0.615,63.776,28.935,3125.0,111.386,True
-text_control,8,1.000549,1.53,93.305,2125.932,15625000000.0,62.12,True
+image_tensor,20,0.644226,0.966,90.599,6.886,3125.0,102.221,True
+mixed_control,8,0.98938,1.379,86.806,58.628,7812501562.5,73.467,True
+sparse_matrix,12,0.165062,0.658,75.312,11.494,3125.0,140.906,True
+synthetic,9,0.196915,0.567,61.275,33.689,3125.0,110.98,True
+text_control,8,1.000549,1.446,88.186,2032.304,15625000000.0,63.669,True

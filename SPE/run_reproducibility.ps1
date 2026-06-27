@@ -5,12 +5,13 @@
 
 .DESCRIPTION
     Runs, in order:
-      1. Integration tests (16 checks)
+      1. Integration tests (17 checks)
       2. Capacity benchmark (51 payloads)
       3. Broad software benchmark
-      4. Native C benchmark
-      5. Practical memory benchmark
-      6. Figure generation
+      4. Full-corpus block-size sweep
+      5. Native C benchmark
+      6. Practical memory benchmark
+      7. Figure generation
 
     All steps must pass before figures are generated.
     Run from the ASBX repository root:
@@ -38,7 +39,7 @@ try {
     # -----------------------------------------------------------------------
     # Step 1: Integration tests
     # -----------------------------------------------------------------------
-    Write-Step "Step 1 of 6: Integration tests"
+    Write-Step "Step 1 of 7: Integration tests"
     & $Python (Join-Path $CodeDir "test_integration.py")
     if ($LASTEXITCODE -ne 0) {
         Write-Fail "Integration tests failed. Aborting."
@@ -49,7 +50,7 @@ try {
     # -----------------------------------------------------------------------
     # Step 2: Capacity benchmark
     # -----------------------------------------------------------------------
-    Write-Step "Step 2 of 6: Capacity benchmark (51 payloads)"
+    Write-Step "Step 2 of 7: Capacity benchmark (51 payloads)"
     & $Python (Join-Path $CodeDir "capacity_benchmark.py")
     if ($LASTEXITCODE -ne 0) {
         Write-Fail "Capacity benchmark failed. Aborting."
@@ -65,7 +66,7 @@ try {
     # -----------------------------------------------------------------------
     # Step 3: Broad software benchmark
     # -----------------------------------------------------------------------
-    Write-Step "Step 3 of 6: Broad software benchmark"
+    Write-Step "Step 3 of 7: Broad software benchmark"
     & $Python (Join-Path $CodeDir "software_benchmark.py")
     if ($LASTEXITCODE -ne 0) {
         Write-Fail "Broad software benchmark failed. Aborting."
@@ -79,9 +80,25 @@ try {
     Write-Ok "Broad software benchmark complete. Results in SPE\results\"
 
     # -----------------------------------------------------------------------
-    # Step 4: Native C benchmark
+    # Step 4: Full-corpus block-size sweep
     # -----------------------------------------------------------------------
-    Write-Step "Step 4 of 6: Native C benchmark"
+    Write-Step "Step 4 of 7: Full-corpus block-size sweep"
+    & $Python (Join-Path $CodeDir "block_size_sweep.py")
+    if ($LASTEXITCODE -ne 0) {
+        Write-Fail "Block-size sweep failed. Aborting."
+        exit 1
+    }
+    $SweepCsvPath = Join-Path $PSScriptRoot "results\block_size_sweep_summary.csv"
+    if (-not (Test-Path $SweepCsvPath)) {
+        Write-Fail "Expected output not found: $SweepCsvPath"
+        exit 1
+    }
+    Write-Ok "Block-size sweep complete. Results in SPE\results\"
+
+    # -----------------------------------------------------------------------
+    # Step 5: Native C benchmark
+    # -----------------------------------------------------------------------
+    Write-Step "Step 5 of 7: Native C benchmark"
     & $Python (Join-Path $CodeDir "native_benchmark.py")
     if ($LASTEXITCODE -ne 0) {
         Write-Fail "Native C benchmark failed. Aborting."
@@ -95,9 +112,9 @@ try {
     Write-Ok "Native C benchmark complete. Results in SPE\results\"
 
     # -----------------------------------------------------------------------
-    # Step 5: Practical benchmark
+    # Step 6: Practical benchmark
     # -----------------------------------------------------------------------
-    Write-Step "Step 5 of 6: Practical memory benchmark"
+    Write-Step "Step 6 of 7: Practical memory benchmark"
     & $Python (Join-Path $CodeDir "practical_benchmark.py")
     if ($LASTEXITCODE -ne 0) {
         Write-Fail "Practical benchmark failed. Aborting."
@@ -111,9 +128,9 @@ try {
     Write-Ok "Practical benchmark complete. Results in SPE\results\"
 
     # -----------------------------------------------------------------------
-    # Step 6: Figures
+    # Step 7: Figures
     # -----------------------------------------------------------------------
-    Write-Step "Step 6 of 6: Figure generation"
+    Write-Step "Step 7 of 7: Figure generation"
     & $Python (Join-Path $CodeDir "produce_figures.py")
     if ($LASTEXITCODE -ne 0) {
         Write-Fail "Figure generation failed."

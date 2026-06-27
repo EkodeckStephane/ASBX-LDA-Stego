@@ -1,0 +1,6 @@
+domain,n_payloads,best_block_size,best_median_ratio,median_ratio_256,relative_gain_vs_256_percent,all_round_trips_ok
+image_tensor,20,2048,0.640686,0.644226,0.549,True
+mixed_control,8,512,0.979645,0.98938,0.984,True
+sparse_matrix,12,2048,0.152161,0.165062,7.816,True
+synthetic,9,2048,0.182993,0.196915,7.07,True
+text_control,8,32,1.000549,1.000549,0.0,True

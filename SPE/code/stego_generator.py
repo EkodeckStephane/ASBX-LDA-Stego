@@ -118,18 +118,25 @@ def extract_indices(
     stego_words: list[str],
     vocab: list[str],
     beta: np.ndarray,
+    oov_policy: str = "raise",
 ) -> list[int]:
     """Recover topic indices from stego words by maximum-likelihood assignment.
 
     z_j* = argmax_t  beta[t, vocab_index(w_j)]
 
-    Words absent from the vocabulary are assigned topic 0 (OOV fallback).
+    By default, words absent from the vocabulary raise ``ValueError``.  The
+    legacy ``oov_policy="zero"`` mode maps them to topic 0 for diagnostic
+    experiments only.
     """
+    if oov_policy not in {"raise", "zero"}:
+        raise ValueError(f"unknown OOV policy: {oov_policy}")
     word_to_idx = {w: i for i, w in enumerate(vocab)}
     indices: list[int] = []
     for word in stego_words:
         idx = word_to_idx.get(word)
         if idx is None:
+            if oov_policy == "raise":
+                raise ValueError(f"OOV stego word: {word!r}")
             indices.append(0)
         else:
             indices.append(int(np.argmax(beta[:, idx])))

@@ -60,6 +60,7 @@ static void usage(FILE *stream) {
     fprintf(stream, "  asbxc encode [--block-size N] <input> <output>\n");
     fprintf(stream, "  asbxc encode-oracle [--block-size N] <input> <output>\n");
     fprintf(stream, "  asbxc decode <input.asbx> <output>\n");
+    fprintf(stream, "  asbxc decode-limited <max-output-bytes> <input.asbx> <output>\n");
     fprintf(stream, "  asbxc validate <input.asbx>\n");
     fprintf(stream, "  asbxc bench [--block-size N] <repeats> <input>\n");
 }
@@ -224,6 +225,33 @@ int main(int argc, char **argv) {
             return 1;
         }
         int rc = write_file(argv[arg + 1], &output);
+        asbx_buffer_free(&output);
+        return rc;
+    }
+
+    if (strcmp(command, "decode-limited") == 0) {
+        if (argc - arg != 3) {
+            usage(stderr);
+            return 2;
+        }
+        char *end = NULL;
+        unsigned long parsed = strtoul(argv[arg], &end, 10);
+        if (end == argv[arg] || *end != '\0') {
+            fprintf(stderr, "invalid max output size\n");
+            return 2;
+        }
+        asbx_buffer input = {0};
+        asbx_buffer output = {0};
+        if (read_file(argv[arg + 1], &input) != 0) {
+            return 1;
+        }
+        asbx_status status = asbx_decode_with_limit(input.data, input.size, (size_t)parsed, &output);
+        asbx_buffer_free(&input);
+        if (status != ASBX_OK) {
+            fprintf(stderr, "decode failed: %s\n", asbx_status_message(status));
+            return 1;
+        }
+        int rc = write_file(argv[arg + 2], &output);
         asbx_buffer_free(&output);
         return rc;
     }

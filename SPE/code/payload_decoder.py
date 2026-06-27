@@ -81,6 +81,7 @@ def infer_topic_indices(
     vocab: list[str],
     beta: np.ndarray,
     k: int,
+    oov_policy: str = "raise",
 ) -> list[int]:
     """Recover the topic index that most likely generated each stego word.
 
@@ -105,10 +106,12 @@ def infer_topic_indices(
     List of integers in [0, T), one per stego word.
     Notes
     -----
-    Words not found in the vocabulary are assigned topic 0 (neutral fallback).
-    For a production system, an out-of-vocabulary sentinel should be inserted
-    during embedding to flag such positions explicitly.
+    Words not found in the vocabulary raise ``ValueError`` by default.  The
+    legacy ``oov_policy="zero"`` mode maps them to topic 0 for diagnostic
+    experiments only.
     """
+    if oov_policy not in {"raise", "zero"}:
+        raise ValueError(f"unknown OOV policy: {oov_policy}")
     word_to_idx = {w: i for i, w in enumerate(vocab)}
     T = beta.shape[0]
     indices: list[int] = []
@@ -116,6 +119,8 @@ def infer_topic_indices(
     for word in stego_words:
         idx = word_to_idx.get(word)
         if idx is None:
+            if oov_policy == "raise":
+                raise ValueError(f"OOV stego word: {word!r}")
             indices.append(0)
         else:
             topic = int(np.argmax(beta[:, idx]))
@@ -135,6 +140,7 @@ def decode_stego_text(
     beta: np.ndarray,
     k: int,
     compressed_length: int,
+    oov_policy: str = "raise",
 ) -> bytes:
     """End-to-end decode: stego words → secret bytes.
 
@@ -153,7 +159,7 @@ def decode_stego_text(
     -------
     Recovered secret bytes.
     """
-    topic_indices = infer_topic_indices(stego_words, vocab, beta, k)
+    topic_indices = infer_topic_indices(stego_words, vocab, beta, k, oov_policy=oov_policy)
     return decode_payload(topic_indices, k, compressed_length)
 
 

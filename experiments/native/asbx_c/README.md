@@ -32,6 +32,7 @@ Primary functions:
 - `asbx_default_config()`;
 - `asbx_encode_with_config(...)`;
 - `asbx_decode(...)`;
+- `asbx_decode_with_limit(...)`;
 - `asbx_validate(...)`;
 - `asbx_buffer_free(...)`;
 - `asbx_format_version()`;
@@ -47,6 +48,7 @@ callers.
 .\asbxc.exe encode-oracle --block-size 256 input.bin output.asbx
 .\asbxc.exe validate output.asbx
 .\asbxc.exe decode output.asbx recovered.bin
+.\asbxc.exe decode-limited 1048576 output.asbx recovered.bin
 .\asbxc.exe bench --block-size 256 200 input.bin
 ```
 

@@ -1,5 +1,6 @@
 import subprocess
 from pathlib import Path
+import random
 
 import pytest
 
@@ -89,3 +90,59 @@ def test_native_c_validate_reports_container_stats(tmp_path: Path, asbxc: Path) 
     assert "format_version=0" in proc.stdout
     assert f"input_bytes={len(payload)}" in proc.stdout
     assert "encoded_bytes=" in proc.stdout
+
+
+def test_native_c_decode_limit_fails_closed(tmp_path: Path, asbxc: Path) -> None:
+    payload = b"\x00" * 1024
+    src = tmp_path / "input.bin"
+    enc = tmp_path / "native.asbx"
+    out = tmp_path / "decoded.bin"
+    src.write_bytes(payload)
+
+    subprocess.run([str(asbxc), "encode", "--block-size", "128", str(src), str(enc)], check=True)
+    proc = subprocess.run(
+        [str(asbxc), "decode-limited", "512", str(enc), str(out)],
+        capture_output=True,
+        text=True,
+    )
+
+    assert proc.returncode != 0
+    assert not out.exists()
+
+
+def test_native_c_rejects_corrupted_containers(tmp_path: Path, asbxc: Path) -> None:
+    payload = b"\x00" * 512 + b"corruption-test" * 16
+    src = tmp_path / "input.bin"
+    enc = tmp_path / "native.asbx"
+    src.write_bytes(payload)
+    subprocess.run([str(asbxc), "encode", "--block-size", "64", str(src), str(enc)], check=True)
+    original = bytearray(enc.read_bytes())
+
+    for offset in [0, 1, 4, 5, 6]:
+        corrupted = bytearray(original)
+        corrupted[offset] ^= 0x55
+        bad = tmp_path / f"bad_{offset}.asbx"
+        bad.write_bytes(corrupted)
+        proc = subprocess.run([str(asbxc), "validate", str(bad)], capture_output=True, text=True)
+        assert proc.returncode != 0
+
+    truncated = tmp_path / "truncated.asbx"
+    truncated.write_bytes(original[:-1])
+    proc = subprocess.run([str(asbxc), "validate", str(truncated)], capture_output=True, text=True)
+    assert proc.returncode != 0
+
+
+def test_native_c_deterministic_fuzz_round_trips(tmp_path: Path, asbxc: Path) -> None:
+    rng = random.Random(20260627)
+    for case in range(25):
+        size = rng.randrange(0, 4096)
+        payload = bytes(rng.randrange(0, 256) if rng.random() < 0.08 else 0 for _ in range(size))
+        src = tmp_path / f"fuzz_{case}.bin"
+        enc = tmp_path / f"fuzz_{case}.asbx"
+        out = tmp_path / f"fuzz_{case}.out"
+        src.write_bytes(payload)
+
+        subprocess.run([str(asbxc), "encode", "--block-size", "128", str(src), str(enc)], check=True)
+        subprocess.run([str(asbxc), "decode-limited", str(max(size, 1)), str(enc), str(out)], check=True)
+
+        assert out.read_bytes() == payload

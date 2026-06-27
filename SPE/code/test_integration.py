@@ -215,6 +215,20 @@ def test_large_payload_consistency():
           f"actual ratio={len(compressed)/len(secret):.3f}")
 
 
+def test_oov_rejection():
+    """Unknown stego words fail closed instead of decoding as topic 0."""
+    T = 8
+    V = T * 8
+    vocab = make_vocab(V)
+    beta = make_synthetic_beta(T, V, seed=13)
+    try:
+        extract_indices(["word0", "not_in_vocab"], vocab, beta)
+    except ValueError:
+        check("oov_rejection: unknown word raises ValueError", True)
+    else:
+        check("oov_rejection: unknown word raises ValueError", False)
+
+
 # ---------------------------------------------------------------------------
 # Runner
 # ---------------------------------------------------------------------------
@@ -242,6 +256,9 @@ def main():
 
     print("--- Large payload (16 KB, rho=5%) ---")
     test_large_payload_consistency()
+
+    print("--- OOV rejection ---")
+    test_oov_rejection()
 
     print(f"\n{'='*40}")
     total = PASS + FAIL

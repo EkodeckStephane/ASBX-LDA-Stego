@@ -10,7 +10,7 @@ Implemented:
 - canonical unsigned LEB128 decoding;
 - global raw fallback matching the Python reference;
 - public C API with explicit configuration and container statistics;
-- CLI commands for encode, validate, decode, oracle encode, and in-process benchmark.
+- CLI commands for encode, validate, decode, bounded decode, oracle encode, and in-process benchmark.
 
 Build on Windows with MSYS2 UCRT64:
 
@@ -24,6 +24,7 @@ CLI usage:
 experiments\native\asbx_c\asbxc.exe encode --block-size 256 input.bin output.asbx
 experiments\native\asbx_c\asbxc.exe validate output.asbx
 experiments\native\asbx_c\asbxc.exe decode output.asbx recovered.bin
+experiments\native\asbx_c\asbxc.exe decode-limited 1048576 output.asbx recovered.bin
 experiments\native\asbx_c\asbxc.exe bench --block-size 256 200 input.bin
 ```
 

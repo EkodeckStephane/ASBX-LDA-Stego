@@ -991,6 +991,39 @@ asbx_status asbx_decode(
     return ASBX_OK;
 }
 
+asbx_status asbx_decode_with_limit(
+    const uint8_t *container,
+    size_t container_size,
+    size_t max_output_size,
+    asbx_buffer *output
+) {
+    if (output == NULL || (container == NULL && container_size != 0)) {
+        return ASBX_ERR_INVALID_ARGUMENT;
+    }
+    output->data = NULL;
+    output->size = 0;
+    if (
+        container_size < 6
+        || container[0] != ASBX_MAGIC0
+        || container[1] != ASBX_MAGIC1
+        || container[2] != ASBX_MAGIC2
+        || container[3] != ASBX_MAGIC3
+        || container[4] != ASBX_VERSION
+    ) {
+        return ASBX_ERR_MALFORMED;
+    }
+    size_t offset = 6;
+    uint64_t original_length = 0;
+    asbx_status status = read_uvarint(container, container_size, &offset, &original_length);
+    if (status != ASBX_OK || original_length > SIZE_MAX) {
+        return ASBX_ERR_MALFORMED;
+    }
+    if ((size_t)original_length > max_output_size) {
+        return ASBX_ERR_UNSUPPORTED;
+    }
+    return asbx_decode(container, container_size, output);
+}
+
 asbx_status asbx_validate(const uint8_t *container, size_t container_size, asbx_stats *stats) {
     asbx_buffer decoded = {0};
     asbx_status status = asbx_decode(container, container_size, &decoded);

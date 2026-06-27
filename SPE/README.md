@@ -37,6 +37,7 @@ SPE/
     capacity_benchmark.py
     software_benchmark.py
     native_benchmark.py
+    block_size_sweep.py
     practical_benchmark.py
     produce_figures.py
     test_integration.py
@@ -49,6 +50,8 @@ SPE/
     software_benchmark_summary.csv
     native_benchmark.csv
     native_benchmark_summary.csv
+    block_size_sweep.csv
+    block_size_sweep_summary.csv
     practical_benchmark.csv
     practical_benchmark_summary.csv
 
@@ -84,8 +87,9 @@ powershell -ExecutionPolicy Bypass -File .\SPE\run_reproducibility.ps1
 ```
 
 The script runs integration tests, the 51-payload capacity benchmark, the
-57-payload broad software benchmark, the native C benchmark, the short
-memory-oriented practical benchmark, and figure/table generation.
+57-payload broad software benchmark, the full-corpus block-size sweep, the
+native C benchmark, the short memory-oriented practical benchmark, and
+figure/table generation.
 
 Compile the article:
 
@@ -119,8 +123,9 @@ byte-specified sparse-structure codec and reproducible selector artefact, not
 as a universal compressor.
 
 The native C implementation lives under `experiments/native/asbx_c/` and
-builds with MSYS2 UCRT64.  Its benchmark uses repeated in-memory loops and
-shows one-to-two orders of magnitude faster encoding than the Python
+builds with MSYS2 UCRT64.  It provides encode/decode/validate/bounded-decode
+CLI commands plus an explicit C API.  Its benchmark uses repeated in-memory
+loops and shows one-to-two orders of magnitude faster encoding than the Python
 reference on the local 16 KiB prefixes.
 
 ---
@@ -151,8 +156,8 @@ payloads, `R` is approximately 1 and the gain disappears.
 - Native implementation contribution: C encoder/decoder and CLI compatible
   with the Python ASBX container format.
 - Case study: ASBX pre-compression for LDA topic-index embedding capacity.
-- Explicit non-claims: production throughput, stable ASBX v1 format, fluent
-  stego text, and end-to-end steganographic security.
+- Explicit non-claims: universal compression-ratio superiority, stable ASBX v1
+  standardisation, and end-to-end steganographic security.
 - Wiley data-sharing alignment: generated results, scripts, code, and tables
   are available in this repository and should be archived with a persistent
   identifier before submission.
